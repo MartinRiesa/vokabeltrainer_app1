@@ -1,26 +1,33 @@
 // lib/ui/question_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:vokabeltrainer_app/core/question_generator.dart';  // ← HIER HINZUFÜGEN
 import 'package:vokabeltrainer_app/core/level_manager.dart';
-import 'package:vokabeltrainer_app/core/question_generator.dart';
 
 class QuestionScreen extends StatefulWidget {
-  const QuestionScreen({Key? key}) : super(key: key);
+  final String source;
+  final String target;
+
+  const QuestionScreen({
+    Key? key,
+    required this.source,
+    required this.target,
+  }) : super(key: key);
 
   @override
-  State<QuestionScreen> createState() => _QuestionScreenState();
+  _QuestionScreenState createState() =>
+      _QuestionScreenState();
 }
 
 class _QuestionScreenState extends State<QuestionScreen> {
   final LevelManager _manager = LevelManager();
-  late Question _question;
+  late Question _question;                // Question ist jetzt bekannt
   bool _answered = false;
   int? _wrongIndex;
 
   @override
   void initState() {
     super.initState();
-    // Initialisierung der Logik
     _manager.init().then((_) {
       setState(() => _question = _manager.nextQuestion());
     });
@@ -30,14 +37,12 @@ class _QuestionScreenState extends State<QuestionScreen> {
     if (_answered) return;
     final correct = _manager.answer(_question, idx);
     if (correct) {
-      // Bei richtiger Antwort sofort neue Frage
       setState(() {
         _answered = false;
         _wrongIndex = null;
         _question = _manager.nextQuestion();
       });
     } else {
-      // Bei falscher Antwort erst markieren
       setState(() {
         _answered = true;
         _wrongIndex = idx;
@@ -49,15 +54,14 @@ class _QuestionScreenState extends State<QuestionScreen> {
     setState(() {
       _answered = false;
       _wrongIndex = null;
-      // LevelManager.streak ist bereits auf 0 gesetzt
       _question = _manager.nextQuestion();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Noch keine Frage geladen?
-    if (_manager.streak == 0 && (_question == null)) {
+    // Warten, bis _question gesetzt ist
+    if (_question == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -65,29 +69,40 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Level ${_manager.level} – Streak: ${_manager.streak}/${LevelManager.levelGoal}'),
+        title: Text(
+            'Level ${_manager.level} – Streak: ${_manager.streak}/${LevelManager.levelGoal}'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment:
+          CrossAxisAlignment.stretch,
           children: [
-            Text(_question.prompt, style: const TextStyle(fontSize: 20)),
+            Text(_question.prompt,
+                style: const TextStyle(fontSize: 20)),
             const SizedBox(height: 16),
-            ..._question.options.asMap().entries.map((e) {
+            ..._question.options
+                .asMap()
+                .entries
+                .map((e) {
               final idx = e.key;
-              final text = e.value;
+              final label = e.value;
               Color? bg;
               if (_answered) {
-                if (idx == _question.correctIndex) bg = Colors.green;
-                else if (idx == _wrongIndex) bg = Colors.red;
+                if (idx == _question.correctIndex)
+                  bg = Colors.green;
+                else if (idx == _wrongIndex)
+                  bg = Colors.red;
               }
               return Container(
-                margin: const EdgeInsets.symmetric(vertical: 4),
+                margin: const EdgeInsets.symmetric(
+                    vertical: 4),
                 child: ElevatedButton(
-                  onPressed: () => _handleAnswer(idx),
-                  style: ElevatedButton.styleFrom(backgroundColor: bg),
-                  child: Text(text),
+                  onPressed: () =>
+                      _handleAnswer(idx),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: bg),
+                  child: Text(label),
                 ),
               );
             }),
@@ -95,7 +110,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
             if (_answered)
               ElevatedButton(
                 onPressed: _restartLevel,
-                child: const Text('Level neu starten'),
+                child:
+                const Text('Level neu starten'),
               ),
           ],
         ),

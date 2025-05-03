@@ -18,7 +18,6 @@ Future<List<Map<String, String>>> loadWordPairs() async {
   final lines = const LineSplitter().convert(raw);
   final pairs = <Map<String, String>>[];
 
-  // Ab Zeile 1 (Überspringen des Headers)
   for (var i = 1; i < lines.length; i++) {
     final line = lines[i].trim();
     if (line.isEmpty) continue;
