@@ -1,7 +1,7 @@
 // lib/main.dart
 
 import 'package:flutter/material.dart';
-import 'package:vokabeltrainer_app/ui/language_selection_screen.dart';
+import 'package:vokabeltrainer_app/ui/question_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'VokabelTrainer Classic',
-      home: LanguageSelectionScreen(),
+      home: QuestionScreen(),
     );
   }
 }
