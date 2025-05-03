@@ -4,12 +4,13 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.18.0 <3.0.0"
+  sdk: '>=3.7.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  flutter_tts: ^3.8.5
 
 dev_dependencies:
   flutter_test:
@@ -21,3 +22,4 @@ flutter:
 
   assets:
     - assets/Vokabeln alle.csv
+    - assets/images/    # bindet alle Dateien in diesem Ordner ein
