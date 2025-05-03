@@ -15,6 +15,7 @@ class LevelManager {
   late final List<VocabPair> _pairs;    // Alle geladenen Vokabeln mit Fehlerzählern
   int level = 1;                        // Aktuelles Level (beginnt bei 1)
   int streak = 0;                       // Aktueller Streak (richtige Antworten in Folge)
+  VocabPair? _lastPair;                 // Zuletzt abgefragte Karte
 
   /// Initialisiert den Manager, lädt alle Wortpaare.
   Future<void> init() async {
@@ -38,10 +39,14 @@ class LevelManager {
     final maxIndex = (level * 7).clamp(1, _pairs.length);
     final subset = _pairs.sublist(0, maxIndex);
 
-    // Wähle die Zielkarte gewichtet nach Fehlerhäufigkeit
-    final target = _pickWeighted(subset);
+    // Ziehe eine neue Karte, wiederhole falls identisch zur letzten
+    VocabPair target;
+    do {
+      target = _pickWeighted(subset);
+    } while (_lastPair != null && subset.length > 1 && target == _lastPair);
+    _lastPair = target;
 
-    // Bereite Distraktoren vor: zuerst bis zu 2 bereits fehlbeantwortete Karten,
+    // Bereite Distraktoren vor: zuerst bis zu 2 bereits fehlerhafte Karten,
     // dann zusätzlich zufällige Karten aus dem Rest, bis insgesamt 3 Distraktoren.
     final others = List<VocabPair>.from(subset)..remove(target);
 
